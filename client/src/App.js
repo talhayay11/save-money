@@ -1,17 +1,24 @@
-// client/src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.scss';
 
 function App() {
   const [date, setDate] = useState('');
   const [income, setIncome] = useState('');
   const [expense, setExpense] = useState('');
+  const [salary, setSalary] = useState({});
   const [records, setRecords] = useState([]);
   const [monthlyProfit, setMonthlyProfit] = useState(null);
   const [showDailyReport, setShowDailyReport] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(''); // Seçilen ay ve yıl için
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [forest, setForest] = useState(0); // Ormandaki ağaç sayısı
+  const [showForest, setShowForest] = useState(false); // Orman görünürlüğü
+  const [isFirstDay, setIsFirstDay] = useState(false);
 
-  // Yeni bir gelir-gider kaydı ekleyen fonksiyon
+  useEffect(() => {
+    const today = new Date();
+    setIsFirstDay(today.getDate() === 1);
+  }, []);
+
   const addRecord = () => {
     if (!date || !income || !expense) return;
 
@@ -24,13 +31,11 @@ function App() {
       },
     ]);
 
-    // Form alanlarını sıfırlama
     setDate('');
     setIncome('');
     setExpense('');
   };
 
-  // Aylık kârı hesaplayan fonksiyon
   const calculateMonthlyProfit = () => {
     if (!selectedMonth) return;
 
@@ -48,10 +53,35 @@ function App() {
       (total, record) => total + (record.income - record.expense),
       0
     );
-    setMonthlyProfit(profit.toFixed(2));
+
+    const fixedSalary = salary[selectedMonth] || 0;
+    const totalProfit = profit + fixedSalary;
+    setMonthlyProfit(totalProfit.toFixed(2));
+
+    // Her 100 TL kar için bir ağaç ekle
+    const newTrees = Math.floor(totalProfit / 100);
+    setForest(newTrees);
   };
 
-  // Kayıtlı ay ve yılları almak için unique ay-yıl listesi
+  const addSalary = () => {
+    if (!isFirstDay) {
+      alert('Maaş sadece ayın birinci günü girilebilir.');
+      return;
+    }
+
+    const today = new Date();
+    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+    const newSalary = prompt(`Lütfen ${currentMonth} ayı için maaşınızı girin (TL):`, salary[currentMonth] || 0);
+
+    if (newSalary !== null) {
+      setSalary({
+        ...salary,
+        [currentMonth]: parseFloat(newSalary) || 0,
+      });
+    }
+  };
+
   const uniqueMonths = Array.from(
     new Set(records.map(record => {
       const recordDate = new Date(record.date);
@@ -59,7 +89,6 @@ function App() {
     }))
   );
 
-  // Seçilen ayın kayıtlarını filtreleme
   const selectedMonthRecords = records.filter(record => {
     const recordDate = new Date(record.date);
     const [selectedYear, selectedMonthIndex] = selectedMonth.split('-').map(Number);
@@ -89,10 +118,15 @@ function App() {
         </button>
       </div>
 
+      {isFirstDay && (
+        <div className="salary-form">
+          <button onClick={addSalary}>Maaş Ekle</button>
+        </div>
+      )}
+
       <div className="monthly-profit">
         <label>Aylık Kârı Göster:</label>
-        <select onChange={(e) => {setSelectedMonth(e.target.value);
-         setMonthlyProfit(null);}} value={selectedMonth}>
+        <select onChange={(e) => { setSelectedMonth(e.target.value); setMonthlyProfit(null); }} value={selectedMonth}>
           <option value="">Bir ay seçin</option>
           {uniqueMonths.map((month, index) => (
             <option key={index} value={month}>{month}</option>
@@ -100,6 +134,19 @@ function App() {
         </select>
         <button onClick={calculateMonthlyProfit}>Hesapla</button>
         {monthlyProfit !== null && <h2>{selectedMonth} Ayında Kâr: {monthlyProfit} TL</h2>}
+      </div>
+
+      <div className="forest">
+        <button onClick={() => setShowForest(!showForest)}>
+          Ormanım
+        </button>
+        {showForest && (
+          <div className="forest-grid">
+            {Array.from({ length: forest }).map((_, index) => (
+              <div key={index} className="tree">🌳</div>
+            ))}
+          </div>
+        )}
       </div>
 
       {showDailyReport && (
