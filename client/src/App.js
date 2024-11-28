@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.scss';
+import Forest from './forest';
 
 function App() {
   const [date, setDate] = useState('');
@@ -10,7 +11,7 @@ function App() {
   const [monthlyProfit, setMonthlyProfit] = useState(null);
   const [showDailyReport, setShowDailyReport] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState('');
-  const [forest, setForest] = useState(0); // Ormandaki ağaç sayısı
+  const [forest, setForest] = useState(0); // Toplam ağaç sayısı
   const [showForest, setShowForest] = useState(false); // Orman görünürlüğü
   const [isFirstDay, setIsFirstDay] = useState(false);
 
@@ -36,6 +37,25 @@ function App() {
     setExpense('');
   };
 
+  // Tüm ayların toplam kârını hesapla ve ağaç sayısını güncelle
+  const calculateTotalProfitAndTrees = () => {
+    // Gelir ve giderleri tüm kayıtlardan hesapla
+    const totalProfit = records.reduce((total, record) => {
+      return total + (record.income - record.expense);
+    }, 0);
+
+    // Maaşları ekle
+    const totalSalary = Object.values(salary).reduce((total, sal) => total + sal, 0);
+
+    // Toplam kâr
+    const grandTotalProfit = totalProfit + totalSalary;
+
+    // Her 100 TL kâr için ağaç sayısını hesapla
+    const newTreeCount = Math.floor(grandTotalProfit / 100);
+    setForest(newTreeCount); // Yeni toplam ağaç sayısını güncelle
+  };
+
+  // Belirli bir ayın kârını hesapla
   const calculateMonthlyProfit = () => {
     if (!selectedMonth) return;
 
@@ -57,11 +77,12 @@ function App() {
     const fixedSalary = salary[selectedMonth] || 0;
     const totalProfit = profit + fixedSalary;
     setMonthlyProfit(totalProfit.toFixed(2));
-
-    // Her 100 TL kar için bir ağaç ekle
-    const newTrees = Math.floor(totalProfit / 100);
-    setForest(newTrees);
   };
+
+  // Her kayıt veya maaş değiştiğinde toplam kârı ve ağaç sayısını güncelle
+  useEffect(() => {
+    calculateTotalProfitAndTrees();
+  }, [records, salary]);
 
   const addSalary = () => {
     if (!isFirstDay) {
@@ -140,13 +161,7 @@ function App() {
         <button onClick={() => setShowForest(!showForest)}>
           Ormanım
         </button>
-        {showForest && (
-          <div className="forest-grid">
-            {Array.from({ length: forest }).map((_, index) => (
-              <div key={index} className="tree">🌳</div>
-            ))}
-          </div>
-        )}
+        {showForest && <Forest treeCount={forest} />}
       </div>
 
       {showDailyReport && (
