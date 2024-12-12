@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.scss';
 import Forest from './forest';
+import LoginForm from "./LoginForm";
 
 function App() {
   const [date, setDate] = useState('');
@@ -14,6 +15,28 @@ function App() {
   const [forest, setForest] = useState(0); // Toplam ağaç sayısı
   const [showForest, setShowForest] = useState(false); // Orman görünürlüğü
   const [isFirstDay, setIsFirstDay] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isUserPage, setIsUserPage] = useState(false); // Kullanıcı sayfası açık mı?
+
+  const toggleUserPage = () => {
+    if (showForest) {
+      // Eğer orman görünüyorsa, kullanıcı sayfasını değiştirme
+      return;
+    }
+    setIsUserPage(!isUserPage);
+  };
+
+  const toggleForest = () => {
+    setShowForest(!showForest); // Orman görünürlüğünü aç/kapat
+  };
+
+  const handleLogin = (username) => {
+    setUser(username); // Kullanıcı giriş yaparsa, kullanıcı adı kaydedilir
+  };
+
+  const handleLogout = () => {
+    setUser(null); // Kullanıcı çıkış yaparsa oturumu kapat
+  };
 
   useEffect(() => {
     const today = new Date();
@@ -121,63 +144,81 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Finans Takip Sistemi</h1>
-
-      <div className="form">
-        <label>Tarih Seç:</label>
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-
-        <label>Gelir (TL):</label>
-        <input type="number" value={income} onChange={(e) => setIncome(e.target.value)} />
-
-        <label>Gider (TL):</label>
-        <input type="number" value={expense} onChange={(e) => setExpense(e.target.value)} />
-
-        <button onClick={addRecord}>Kaydet</button>
-        <button onClick={() => setShowDailyReport(!showDailyReport)}>
-          Günlük Raporu Göster
-        </button>
-      </div>
-
-      {isFirstDay && (
-        <div className="salary-form">
-          <button onClick={addSalary}>Maaş Ekle</button>
-        </div>
-      )}
-
-      <div className="monthly-profit">
-        <label>Aylık Kârı Göster:</label>
-        <select onChange={(e) => { setSelectedMonth(e.target.value); setMonthlyProfit(null); }} value={selectedMonth}>
-          <option value="">Bir ay seçin</option>
-          {uniqueMonths.map((month, index) => (
-            <option key={index} value={month}>{month}</option>
-          ))}
-        </select>
-        <button onClick={calculateMonthlyProfit}>Hesapla</button>
-        {monthlyProfit !== null && <h2>{selectedMonth} Ayında Kâr: {monthlyProfit} TL</h2>}
-      </div>
-
-      <div className="forest">
-        <button onClick={() => setShowForest(!showForest)}>
-          Ormanım
-        </button>
-        {showForest && <Forest treeCount={forest} />}
-      </div>
-
-      {showDailyReport && (
-        <div>
-          <h2>Seçilen Ay Kayıtları</h2>
-          <ul className="record-list">
-            {selectedMonthRecords.map((record, index) => (
-              <li key={index}>
-                <strong>{record.date}</strong> - Gelir: {record.income} TL, Gider: {record.expense} TL
-              </li>
-            ))}
-          </ul>
-        </div>
+      {isUserPage ? (
+        <>
+          {/* Kullanıcı Giriş Sayfası */}
+          <LoginForm />
+          <button className="back-button" onClick={toggleUserPage}>
+            Geri Dön
+          </button>
+        </>
+      ) : (
+        <>
+          {/* Ana Sayfa */}
+          <header>
+            <h1>Finans Takip Sistemi</h1>
+          </header>
+          <div className="main-content">
+          </div>
+          <div className="fa-solid fa-user user-icon" onClick={toggleUserPage}>
+          </div>
+          <div className="form">
+            <label>Tarih Seç:</label>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+  
+            <label>Gelir (TL):</label>
+            <input type="number" value={income} onChange={(e) => setIncome(e.target.value)} />
+  
+            <label>Gider (TL):</label>
+            <input type="number" value={expense} onChange={(e) => setExpense(e.target.value)} />
+  
+            <button onClick={addRecord}>Kaydet</button>
+            <button onClick={() => setShowDailyReport(!showDailyReport)}>
+              Günlük Raporu Göster
+            </button>
+          </div>
+  
+          {isFirstDay && (
+            <div className="salary-form">
+              <button onClick={addSalary}>Maaş Ekle</button>
+            </div>
+          )}
+  
+          <div className="monthly-profit">
+            <label>Aylık Kârı Göster:</label>
+            <select onChange={(e) => { setSelectedMonth(e.target.value); setMonthlyProfit(null); }} value={selectedMonth}>
+              <option value="">Bir ay seçin</option>
+              {uniqueMonths.map((month, index) => (
+                <option key={index} value={month}>{month}</option>
+              ))}
+            </select>
+            <button onClick={calculateMonthlyProfit}>Hesapla</button>
+            {monthlyProfit !== null && <h2>{selectedMonth} Ayında Kâr: {monthlyProfit} TL</h2>}
+          </div>
+  
+          <div className="forest">
+            <button onClick={() => setShowForest(!showForest)}>
+              Ormanım
+            </button>
+            {showForest && <Forest treeCount={forest} />}
+          </div>
+  
+          {showDailyReport && (
+            <div>
+              <h2>Seçilen Ay Kayıtları</h2>
+              <ul className="record-list">
+                {selectedMonthRecords.map((record, index) => (
+                  <li key={index}>
+                    <strong>{record.date}</strong> - Gelir: {record.income} TL, Gider: {record.expense} TL
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
       )}
     </div>
-  );
+  );  
 }
 
 export default App;
