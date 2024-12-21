@@ -151,6 +151,9 @@ function App() {
           <button className="back-button" onClick={toggleUserPage}>
             Geri Dön
           </button>
+          <button className="back-button" onClick={toggleUserPage}>
+            Kaydol
+          </button>
         </>
       ) : (
         <>
