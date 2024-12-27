@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.forest-container {
+  width: 200px;
+  height: 200px;
+  position: relative; /* Eğer gerekli ise diğer konumlandırma ayarları için */
+  background-color: black; /* Örnek arkaplan rengi */
+  border-radius: 10px; /* İsteğe bağlı köşe yuvarlama */
+}

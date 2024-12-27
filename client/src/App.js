@@ -44,21 +44,38 @@ function App() {
   }, []);
 
   const addRecord = () => {
-    if (!date || !income || !expense) return;
-
+    // Eğer tarih seçilmemişse kaydetme işlemini durdur
+    if (!date) {
+      alert("Lütfen bir tarih seçin.");
+      return;
+    }
+  
+    // Gelir veya gider boş bırakılırsa 0 olarak kabul et
+    const sanitizedIncome = parseFloat(income) || 0;
+    const sanitizedExpense = parseFloat(expense) || 0;
+  
+    // Eğer hem gelir hem de gider 0 ise kaydetme işlemini durdur
+    if (sanitizedIncome === 0 && sanitizedExpense === 0) {
+      alert("Gelir ve giderin her ikisi de sıfır olamaz.");
+      return;
+    }
+  
+    // Kaydı ekle
     setRecords([
       ...records,
       {
         date,
-        income: parseFloat(income),
-        expense: parseFloat(expense),
+        income: sanitizedIncome,
+        expense: sanitizedExpense,
       },
     ]);
-
+  
+    // Formu sıfırla
     setDate('');
     setIncome('');
     setExpense('');
   };
+  
 
   // Tüm ayların toplam kârını hesapla ve ağaç sayısını güncelle
   const calculateTotalProfitAndTrees = () => {

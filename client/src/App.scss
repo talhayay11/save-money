@@ -223,3 +223,42 @@
 .back-button:hover {
   background-color: #45a049;
 }
+
+.forest-container {
+  width: 1000px; /* İstediğiniz genişlik */
+  height: 1000px;
+  margin-right: 900px;
+  padding-bottom: 500px; /* İstediğiniz yükseklik */
+  background-color: black; /* Arka plan rengi */
+  position: relative;
+  border-radius: 10px; /* Köşeleri yuvarlama */
+
+
+  /* İçindeki canvas öğesi */
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.reset-button {
+  position: fixed; /* Sayfa boyunca sabit kalır */
+  top: 20px; /* Üstten boşluk */
+  right: 20px; /* Sağdan boşluk */
+  padding: 15px 25px; /* Buton boyutunu artırır */
+  background-color: #4caf50; /* Yeşil arka plan */
+  color: white; /* Beyaz yazı rengi */
+  border: none; /* Kenarlık yok */
+  border-radius: 8px; /* Köşeleri yuvarlama */
+  font-size: 18px; /* Daha büyük yazı */
+  cursor: pointer; /* İmleç tıklanabilir gösterir */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Hover efekti */
+}
+
+.reset-button:hover {
+  background-color: #45a049; /* Hover sırasında daha koyu yeşil */
+  transform: scale(1.1); /* Hover sırasında büyür */
+}
+
+
