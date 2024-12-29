@@ -40,12 +40,13 @@ const Forest = ({ treeCount }) => {
     camera.lookAt(0, 0, 0); // Kamerayı sahne merkezine odakla
 
     // Zemin
-    const groundGeometry = new THREE.PlaneGeometry(10, 10);
-    const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.1;
-    scene.add(ground);
+    // Zemin (Toprak Alanı)
+const groundGeometry = new THREE.BoxGeometry(10, 1, 10); // 10x10 birim boyutunda, 0.5 birim kalınlığında
+const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 }); // Kahverengi
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.position.y = -0.25; // Zemini biraz alçak konumlandır
+scene.add(ground);
+
 
     // Animasyon döngüsü
     const animate = () => {
