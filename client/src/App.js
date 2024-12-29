@@ -91,7 +91,7 @@ function App() {
     const grandTotalProfit = totalProfit + totalSalary;
 
     // Her 100 TL kâr için ağaç sayısını hesapla
-    const newTreeCount = Math.floor(grandTotalProfit / 100);
+    const newTreeCount = Math.floor(grandTotalProfit / 1000);
     setForest(newTreeCount); // Yeni toplam ağaç sayısını güncelle
   };
 
