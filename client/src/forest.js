@@ -55,7 +55,7 @@ const Forest = ({ treeCount }) => {
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
-      renderer.render(scene, camera);
+      rendererRef.current.render(sceneRef.current, controlsRef.current.object);
     };
     animate();
 
@@ -114,7 +114,9 @@ const Forest = ({ treeCount }) => {
     };
 
     // Yeni ağaç ekleme ve animasyon fonksiyonu
-    const addTreeWithAnimation = (x, z, delay, monthName) => {
+    const addTreeWithAnimation = (x, z, delay) => {
+      const treeDate = new Date(); // Eklenme anındaki tarih
+      const monthName = getTurkishMonth(treeDate.getMonth()); // Dinamik olarak Türkçe ay ismi alınır
       // Gövde
       const trunkGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5, 16);
       const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
@@ -144,7 +146,7 @@ const Forest = ({ treeCount }) => {
       const sprite = new THREE.Sprite(spriteMaterial);
       sprite.position.set(x, 1.2, z); // Gövdenin üstüne yerleştir
       sprite.scale.set(1.5, 0.75, 1); // Ölçek
-      scene.add(sprite);
+      sceneRef.current.add(sprite);
 
       // Animasyon
       let progress = 0;
@@ -156,43 +158,50 @@ const Forest = ({ treeCount }) => {
           leaves.position.y = y + 0.35; // Yapraklar gövdeden yukarıda
           requestAnimationFrame(animateTree);
         } else {
-          renderer.render(scene, camera);
+          rendererRef.current.render(sceneRef.current, controlsRef.current.object);
        }
       };
 
       const handlePopupClose = () => {
         setShowSuccessPopup(false); // Popup'ı kapat
-        setTreeData([]); // Fazla ağaçları sıfırla
+        resetForest(); // Toprak alanını sıfırla
         if (remainingTrees > 0) {
-          previousTreeCount.current = 0; // Sıfırdan başlat
-          setRemainingTrees(0); // Kalan ağaç sayısını temizle
-          for (let i = 0; i < remainingTrees; i++) {
-            addTreeWithAnimation(coordinates[i].x, coordinates[i].z, i * 300); // Yeni ağaçları sırayla ekle
-          }
+          const coordinates = generateGridCoordinates(remainingTrees); // Fazladan ağaçların koordinatlarını al
+          coordinates.forEach(({ x, z }, index) => {
+            addTreeWithAnimation(x, z, index * 300); // Fazla ağaçları ekle
+          });
+          setRemainingTrees(0); // Fazla ağaç sayısını sıfırla
         }
-      };
+      };   
 
       {showSuccessPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <h2>Başardınız! 100 Ağaç Dikildi!</h2>
-            <button onClick={handlePopupClose}>Kapat</button>
+        <div className="popup-overlay">
+          <div className="popup">
+            <div className="popup-content">
+              <h2>Başardınız! 100 Ağaç Dikildi!</h2>
+              <button onClick={handlePopupClose}>Kapat</button>
+            </div>
           </div>
         </div>
       )}
-
-      const playGrowSound = () => {
-        const growSound = new Audio('/sounds/tree-grow.mp3'); // Ses dosyasının yolu
-        growSound.volume = 0.5; // Ses seviyesi (0.0 - 1.0)
-        growSound.play();
-      };
+      
+    //const playGrowSound = () => {
+      //if (!soundPlayed) {
+     //const growSound = new Audio('/sounds/tree-grow.mp3'); // Ses dosyasının yolu
+      //growSound.volume = 0.5; // Ses seviyesi (0.0 - 1.0)
+     //growSound.play();
+      //soundPlayed = true; // Sesin bir kez çalmasını sağla
+      //setTimeout(() => {
+      //soundPlayed = false; // Yeni bir animasyonda tekrar çalınabilir hale getir
+      //}, 500); // Ses çalma kilidini sıfırla
+    //}
+    //};
 
       // Belirli bir gecikme ile animasyonu başlat
       setTimeout(() => {
-        playGrowSound();
+        //playGrowSound();
         animateTree();
         treesRef.current.push({ x, z, month: monthName });
-        renderer.render(scene, camera);
       }, delay);
     };
 
@@ -227,11 +236,18 @@ const Forest = ({ treeCount }) => {
       }
     }
     previousTreeCount.current = treeCount;
-  }, [treeCount, isVisible]);
+
+    if (treeCount >= 100) {
+      const extraTrees = treeCount - 100; // 100'ün üzerindeki ağaç sayısını hesapla
+      setShowSuccessPopup(true); // Popup'ı göster
+      setRemainingTrees(extraTrees); // Fazla ağaçları sakla
+    }
+  }, [treeCount, isVisible, treeCount]);
+  
 
   // Görünürlük kontrolü için Intersection Observer
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const observer = new IntersectionObserver (
       ([entry]) => {
         setIsVisible(entry.isIntersecting); // Görünürlük durumunu ayarla
       },
@@ -276,27 +292,17 @@ const Forest = ({ treeCount }) => {
   
       // Ağaç listesini temizle
       treesRef.current = [];
-      previousTreeCount.current = 0; // Sayacı sıfırla
+      previousTreeCount.current = 0; // Sayaç sıfırla
+      rendererRef.current.render(sceneRef.current, controlsRef.current.object); // Render işlemi
     }
-  };
-  
-  useEffect(() => {
-    if (treeCount >= 100) {
-      const extraTrees = treeCount - 100; // 100'ün üzerindeki ağaç sayısını hesapla
-      setRemainingTrees(extraTrees); // Fazla ağaçları sakla
-      setShowSuccessPopup(true); // Popup'ı göster
-      resetForest(); // Toprak alanını sıfırla
-    }
-  }, [treeCount]);
+  };  
 
   return (
     <div>
       {/* Orman Alanı */}
       <div ref={mountRef} className="forest-container" />
       {/* Ormanım Butonu */}
-      <button onClick={resetForestView} className="reset-button">
-        Ormanım
-      </button>
+      <button onClick={resetForestView} className="fa-solid fa-arrow-rotate-right reset-button"></button>
     </div>
   );
 };

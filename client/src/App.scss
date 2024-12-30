@@ -2,6 +2,8 @@
   text-align: center;
   font-family: Arial, sans-serif;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
 
   h1 {
     color: #4CAF50;
@@ -225,14 +227,13 @@
 }
 
 .forest-container {
-  width: 1000px; /* İstediğiniz genişlik */
-  height: 1000px;
-  margin-right: 900px;
-  padding-bottom: 500px; /* İstediğiniz yükseklik */
-  background-color: black; /* Arka plan rengi */
-  position: relative;
-  border-radius: 10px; /* Köşeleri yuvarlama */
-
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  z-index: 10; /* Diğer içeriklerin üstünde */
 
   /* İçindeki canvas öğesi */
   canvas {
@@ -242,22 +243,19 @@
 }
 
 .reset-button {
-  position: fixed; /* Sayfa boyunca sabit kalır */
-  top: 20px; /* Üstten boşluk */
+  position: absolute; /* Sayfa boyunca sabit kalır */
+  top: 0px; /* Üstten boşluk */
   right: 20px; /* Sağdan boşluk */
-  padding: 15px 25px; /* Buton boyutunu artırır */
-  background-color: #4caf50; /* Yeşil arka plan */
+  background-color: black !important; /* Yeşil arka plan */
   color: white; /* Beyaz yazı rengi */
-  border: none; /* Kenarlık yok */
-  border-radius: 8px; /* Köşeleri yuvarlama */
-  font-size: 18px; /* Daha büyük yazı */
+  border-radius: 150px; /* Köşeleri yuvarlama */
   cursor: pointer; /* İmleç tıklanabilir gösterir */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
   transition: background-color 0.3s ease, transform 0.2s ease; /* Hover efekti */
+  z-index: 100;
 }
 
 .reset-button:hover {
-  background-color: #45a049; /* Hover sırasında daha koyu yeşil */
+  background-color: black; /* Hover sırasında daha koyu yeşil */
   transform: scale(1.1); /* Hover sırasında büyür */
 }
 
@@ -283,39 +281,62 @@
   margin-bottom: 5px;
 }
 
-.popup {
+.popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
+  background-color: rgba(0, 0, 0, 0.7); /* Yarı saydam siyah arka plan */
+  display: flex !important;
+  visibility: visible !important;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999; /* Üstte görüntülensin */
+}
 
-  .popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
+.popup {
+  background-color: #fff; /* Beyaz kutu */
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
 
-    h2 {
-      margin-bottom: 20px;
-    }
+.popup-content h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
 
-    button {
-      padding: 10px 20px;
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+.popup-content button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-      &:hover {
-        background-color: #45a049;
-      }
-    }
-  }
+.popup-content button:hover {
+  background-color: #0056b3;
+}
+
+
+.back-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 20; /* Üstte görünsün */
+}
+
+.back-button:hover {
+  background-color: #45a049;
+  color: white !important;
 }

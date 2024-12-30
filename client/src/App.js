@@ -28,6 +28,11 @@ function App() {
 
   const toggleForest = () => {
     setShowForest(!showForest); // Orman görünürlüğünü aç/kapat
+    if (!showForest) {
+      // Orman görünürlüğü açıldığında diğer içerikleri gizle
+      setIsUserPage(false); // Kullanıcı sayfası kapalı
+      setShowDailyReport(false); // Günlük rapor kapalı
+    }
   };
 
   const handleLogin = (username) => {
@@ -174,29 +179,40 @@ function App() {
         </>
       ) : (
         <>
-          {/* Ana Sayfa */}
-          <header>
-            <h1>Finans Takip Sistemi</h1>
-          </header>
-          <div className="main-content">
-          </div>
-          <div className="fa-solid fa-user user-icon" onClick={toggleUserPage}>
-          </div>
-          <div className="form">
-            <label>Tarih Seç:</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-  
-            <label>Gelir (TL):</label>
-            <input type="number" value={income} onChange={(e) => setIncome(e.target.value)} />
-  
-            <label>Gider (TL):</label>
-            <input type="number" value={expense} onChange={(e) => setExpense(e.target.value)} />
-  
-            <button onClick={addRecord}>Kaydet</button>
-            <button onClick={() => setShowDailyReport(!showDailyReport)}>
+        {showForest ? (
+  <>
+  <Forest treeCount={forest} />
+  <button 
+    onClick={() => setShowForest(false)} 
+    className="back-button"
+  >
+    Ana Sayfaya Dön
+  </button>
+</>) : (
+  <>
+    {/* Ana Sayfa */} 
+    <header>
+      <h1>Finans Takip Sistemi</h1>
+    </header>
+    <div className="main-content">
+      {/* Diğer içerikler */}
+    </div>
+    <div className="form">
+      <label>Tarih Seç:</label>
+      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+      <label>Gelir (TL):</label>
+      <input type="number" value={income} onChange={(e) => setIncome(e.target.value)} />
+      <label>Gider (TL):</label>
+      <input type="number" value={expense} onChange={(e) => setExpense(e.target.value)} />
+      <button onClick={addRecord}>Kaydet</button>
+      <button onClick={() => setShowDailyReport(!showDailyReport)}>
               Günlük Raporu Göster
             </button>
-          </div>
+            <button onClick={toggleForest} className="forest-button">Ormanım</button>
+
+    </div>
+  </>
+)}
   
           {isFirstDay && (
             <div className="salary-form">
@@ -214,13 +230,6 @@ function App() {
             </select>
             <button onClick={calculateMonthlyProfit}>Hesapla</button>
             {monthlyProfit !== null && <h2>{selectedMonth} Ayında Kâr: {monthlyProfit} TL</h2>}
-          </div>
-  
-          <div className="forest">
-            <button onClick={() => setShowForest(!showForest)}>
-              Ormanım
-            </button>
-            {showForest && <Forest treeCount={forest} />}
           </div>
   
           {showDailyReport && (
