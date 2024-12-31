@@ -148,7 +148,7 @@ function App() {
     }
   };
 
-  const uniqueMonths = Array.from(
+  const uniqueMonths = Array.from (
     new Set(records.map(record => {
       const recordDate = new Date(record.date);
       return `${recordDate.getFullYear()}-${String(recordDate.getMonth() + 1).padStart(2, '0')}`;
@@ -170,16 +170,16 @@ function App() {
         <>
           {/* Kullanıcı Giriş Sayfası */}
           <LoginForm />
-          <button className="back-button" onClick={toggleUserPage}>
+          <button className="back-button-login" onClick={toggleUserPage}>
             Geri Dön
           </button>
-          <button className="back-button" onClick={toggleUserPage}>
+          <button className="back-button-login" onClick={toggleUserPage}>
             Kaydol
           </button>
         </>
       ) : (
         <>
-        {showForest ? (
+  {showForest ? (
   <>
   <Forest treeCount={forest} />
   <button 
@@ -197,6 +197,7 @@ function App() {
     <div className="main-content">
       {/* Diğer içerikler */}
     </div>
+    <div className="fa-solid fa-user user-icon" onClick={toggleUserPage}></div>
     <div className="form">
       <label>Tarih Seç:</label>
       <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />

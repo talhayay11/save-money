@@ -167,9 +167,12 @@
 
 /* Giriş Formu */
 .login-form {
-  max-width: 400px;
+  max-width: 600px;
+  min-width: 400px;
   margin: 50px auto;
+  margin-bottom: 0px;
   padding: 20px;
+  padding-right: 30px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -209,9 +212,9 @@
 }
 
 /* Geri Dön Butonu */
-.back-button {
+.back-button-login {
   display: block;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 10px 20px;
   font-size: 1rem;
   color: white;
